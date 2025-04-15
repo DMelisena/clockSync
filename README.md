@@ -1,2 +1,0 @@
-# ClockSync
-ClockSync.swift 
