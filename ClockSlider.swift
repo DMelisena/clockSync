@@ -13,40 +13,106 @@ enum SliderLockType {
 
 struct ClockSlider: View {
     @State private var startAngle: CGFloat = 0
-    @State private var endAngle: CGFloat = 270
+    @State private var endAngle: CGFloat = 90
     @State private var sliderLock: SliderLockType = .none
     
     // The size of the slider
     private let sliderDiameter: CGFloat = 300
     private let knobDiameter: CGFloat = 20
     private let lineWidth: CGFloat = 4
-    private let hourlySnap: CGFloat = 30 // Snap to hourly intervals
+    private let hourlySnap: CGFloat = 360/144 // Snap to hourly intervals
     
-    var body: some View {
-        ZStack {
-            // Draw the circle
-            Circle()
-                .stroke(Color.gray, lineWidth: lineWidth)
-                .frame(width: sliderDiameter, height: sliderDiameter)
-            
-            // Draw start angle handle
-            handleView(angle: startAngle)
-                .foregroundColor(.cyan)
-                .offset(x: (sliderDiameter / 2) * cos(startAngle), y: (sliderDiameter / 2) * sin(startAngle))
-            
-            // Draw end angle handle
-            handleView(angle: endAngle)
-                .foregroundColor(.cyan)
-                .offset(x: (sliderDiameter / 2) * cos(endAngle), y: (sliderDiameter / 2) * sin(endAngle))
+    var durationMinutes: Int {
+        let twoPi = CGFloat.pi * 2
+        var difference = endAngle - startAngle
+        if difference < 0 {
+            difference += twoPi
         }
-        .frame(width: sliderDiameter, height: sliderDiameter)
-        .gesture(DragGesture()
-                    .onChanged { value in
-                        self.handleDrag(value: value.location)
-                    }
-                    .onEnded { _ in
-                        self.sliderLock = .none
-                    })
+        return Int(60*(difference / (CGFloat.pi / 6))) // π/6 = 30°
+//        return Int(twoPi)
+    }
+    var startAngleDeg: CGFloat {
+        startAngle * 180 / .pi
+    }
+    var endAngleDeg: CGFloat {
+        endAngle * 180 / .pi
+    }
+
+    var body: some View {
+        VStack{
+            
+//            ZStack {
+//                // Draw the circle
+//                Circle()
+//                    .stroke(Color.gray, lineWidth: lineWidth)
+//                    .frame(width: sliderDiameter, height: sliderDiameter)
+//                
+//                // Draw start angle handle
+//                handleView(angle: startAngle)
+//                    .foregroundColor(.cyan)
+//                    .offset(x: (sliderDiameter / 2) * cos(startAngle), y: (sliderDiameter / 2) * sin(startAngle))
+//                
+//                // Draw end angle handle
+//                handleView(angle: endAngle)
+//                    .foregroundColor(.cyan)
+//                    .offset(x: (sliderDiameter / 2) * cos(endAngle), y: (sliderDiameter / 2) * sin(endAngle))
+//            }
+            ZStack {
+                // Background circle
+                Circle()
+                    .stroke(Color.gray, lineWidth: lineWidth)
+                    .frame(width: sliderDiameter, height: sliderDiameter)
+                
+                // Active range arc
+                Canvas { context, size in
+                    let center = CGPoint(x: size.width / 2, y: size.height / 2)
+                    let radius = sliderDiameter / 2
+
+                    var path = Path()
+                    path.addArc(
+                        center: center,
+                        radius: radius,
+                        startAngle: Angle(radians: Double(startAngle)),
+                        endAngle: Angle(radians: Double(endAngle)),
+                        clockwise: false
+                    )
+                    context.stroke(path, with: .color(.cyan), lineWidth: lineWidth * 2.5)
+                }
+                .frame(width: sliderDiameter+10, height: sliderDiameter+10)
+                
+                // Start handle
+                handleView(angle: startAngle)
+                    .foregroundColor(.cyan)
+                    .offset(x: (sliderDiameter / 2) * cos(startAngle), y: (sliderDiameter / 2) * sin(startAngle))
+                
+                // End handle
+                handleView(angle: endAngle)
+                    .foregroundColor(.cyan)
+                    .offset(x: (sliderDiameter / 2) * cos(endAngle), y: (sliderDiameter / 2) * sin(endAngle))
+            }
+            .frame(width: sliderDiameter, height: sliderDiameter)
+            .gesture(DragGesture()
+                        .onChanged { value in
+                            self.handleDrag(value: value.location)
+                        }
+                        .onEnded { _ in
+                            self.sliderLock = .none
+                        })
+            .rotationEffect(.degrees(-90)) // Moves 0° to the top
+            Text("Duration: \(durationMinutes/60) hour(s)")
+                .font(.headline)
+                .padding(.top, 16)
+            Text("Duration: \(durationMinutes) minute(s)")
+                .font(.headline)
+                .padding(.top, 16)
+            Text("Start Angle: \(startAngleDeg)")
+                .font(.headline)
+                .padding(.top, 16)
+            Text("End Angle: \(endAngleDeg)")
+                .font(.headline)
+                .padding(.top, 16)
+
+        }
     }
     
     // Function to create a knob handle based on angle
