@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+//HOW TO SHOWS AM PM?? should I make a button?
+//TODO: figures out how to determine the am pm condition on the clock
+//or honestly just dont make it available, you can't design a sleep where you miss
+//the circadian rhythm
+//notification and alarm system
+//TODO: Make an array that would create alarm cards
+//TODO: I think the card can't be slided
+//TODO: long press to delete multiple
 struct Home: View {
     @State private var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false
@@ -16,9 +24,8 @@ struct Home: View {
 
             VStack {
                 Spacer() // Pushes buttons to the bottom
-                Text("21:55 - 04:45")
-                    .font(.system(size: 32, weight: .bold, design: .default))
                 ClockSlider()
+                Text("Alarms")
                 AlarmCard()
                 HStack {
                     // Settings button

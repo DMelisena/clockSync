@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+struct DayOfWeekView: View {
+    let days = ["S", "M", "T", "W", "T", "F", "S"]
+    @State private var dayEnabled = [false, true, true, false, true, false, true] // Example boolean array
+
+    var body: some View {
+        HStack {
+            ForEach(0..<days.count, id: \.self) { index in
+                Text(days[index])
+                    .foregroundColor(dayEnabled[index] ? .primary : .gray) // Set color based on boolean
+                    .font(.system(size: 10))
+            }
+        }
+    }
+}
+
 struct AlarmCard: View {
     @State private var isOn = true
     @State private var showConfiguration = false
@@ -21,7 +36,8 @@ struct AlarmCard: View {
                         .padding(.leading)
                     
                     Spacer()
-                    
+                    DayOfWeekView()
+                    Spacer()
                     Toggle("", isOn: $isOn)
                         .labelsHidden()
                         .toggleStyle(SwitchToggleStyle(tint: .blue))
