@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 //HOW TO SHOWS AM PM?? should I make a button?
 //TODO: figures out how to determine the am pm condition on the clock
 //or honestly just dont make it available, you can't design a sleep where you miss
@@ -21,12 +20,12 @@ struct Home: View {
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea() // Background
-
             VStack {
                 Spacer() // Pushes buttons to the bottom
                 ClockSlider()
-                Text("Alarms")
-                AlarmCard()
+                    .padding(.bottom, 50)
+                AlarmCards()
+                    .preferredColorScheme(.dark)
                 HStack {
                     // Settings button
                     Button(action: {

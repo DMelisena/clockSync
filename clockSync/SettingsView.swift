@@ -79,3 +79,10 @@ struct SettingsView: View {
     SettingsView()
         .preferredColorScheme(.dark)
 }
+
+struct SettingsView_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsView()
+            .preferredColorScheme(.dark)
+    }
+}
