@@ -1,4 +1,4 @@
-//
+
 //  ContentView.swift
 //  clockSync
 //
@@ -15,11 +15,6 @@ struct SettingsApp: App {
     }
 }
 
-
-
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView()
-            .preferredColorScheme(.dark)
-    }
+#Preview{
+    Home()
 }

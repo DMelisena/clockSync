@@ -15,12 +15,12 @@ struct ClockSlider: View {
     @State private var startAngle: CGFloat = -1.57
     @State private var endAngle: CGFloat = 2.62
     @State private var sliderLock: SliderLockType = .none
-    
+
     // The size of the slider
     private let sliderDiameter: CGFloat = 230
     private let knobDiameter: CGFloat = 75
     private let lineWidth: CGFloat = 20
-    private let hourlySnap: CGFloat = 360/144 // Snap to hourly intervals
+    private let min5Snap: CGFloat = 360/144 // Snap to hourly intervals
     
     var sliderDiameterAddWidth: CGFloat {
         sliderDiameter + (lineWidth*3)
@@ -70,17 +70,13 @@ struct ClockSlider: View {
             let endTime = timeFromAngle(endAngle)
             Text("\(startTime.hour):\(String(format: "%02d", startTime.minute)) - \(endTime.hour):\(String(format: "%02d", endTime.minute))")
                 .font(.system(size: 38, weight: .bold, design: .default))
-            
             .padding(20) // Adds 20 points
-            ZStack {
-                // Background circle
-                Circle()
+            ZStack { Circle()// Background circle
                     .stroke(Color(red: 123/255, green: 60/255, blue: 146/255).opacity(0.5), lineWidth: lineWidth * 3)
                 
                     .frame(width: sliderDiameter, height: sliderDiameter)
                 
-                // Clock's strips
-                Canvas { context, size in
+                Canvas { context, size in // Clock's strips
                     let center = CGPoint(x: size.width / 2, y: size.height / 2)
                     let radius = sliderDiameter / 3 + 4
                     let tickLength: CGFloat = 8
@@ -104,10 +100,9 @@ struct ClockSlider: View {
                     }
                 }
                 .frame(width: sliderDiameter, height: sliderDiameter)
-                Canvas { context, size in
+                Canvas { context, size in //Inbetween Sleep
                     let center = CGPoint(x: size.width / 2, y: size.height / 2)
                     let radius = sliderDiameter / 2
-                    
                     var path = Path()
                     path.addArc(
                         center: center,
@@ -117,15 +112,15 @@ struct ClockSlider: View {
                         clockwise: false
                     )
                     context.stroke(path, with: .color(.purple), lineWidth: lineWidth * 2.5)
-//                    context.stroke(path, with: .color(Color(red: 123/255, green: 60/255, blue: 146/255)), lineWidth: lineWidth * 2.5)
                 }
                 .frame(width: sliderDiameterAddWidth, height: sliderDiameterAddWidth)
                 
                 // Start handle
                 handleView(angle: startAngle)
                     .foregroundColor(.cyan)
+//                    .offset(x: (sliderDiameter / 2) * cos(startAngle), y: (sliderDiameter / 2) * sin(startAngle))
                     .offset(x: (sliderDiameter / 2) * cos(startAngle), y: (sliderDiameter / 2) * sin(startAngle))
-                
+
                 // End handle
                 handleView(angle: endAngle)
                     .foregroundColor(.cyan)
@@ -140,19 +135,7 @@ struct ClockSlider: View {
                     self.sliderLock = .none
                 })
             .rotationEffect(.degrees(-90)) // Moves 0° to the top
-            .padding(20) // Adds 20 points
-            //            Text("Duration: \(durationMinutes/60) hour(s)")
-            //                .font(.headline)
-            //                .padding(.top, 16)
-            //            Text("Duration: \(durationMinutes) minute(s)")
-            //                .font(.headline)
-            //                .padding(.top, 16)
-            //            Text("Start Angle: \(startAngleDeg)")
-            //                .font(.headline)
-            //                .padding(.top, 16)
-            //            Text("End Angle: \(endAngleDeg)")
-            //                .font(.headline)
-            //                .padding(.top, 16)
+            .padding(20) // Adds 20 padding surrounding the circle
             Text(formattedDuration)
                 .font(.headline)
                 .padding(.top, 20)
@@ -191,7 +174,7 @@ struct ClockSlider: View {
         let angle = angleFromPoint(value)
         
         // Snapping the angle to hourly intervals (30 degrees)
-        let snappedAngle = round(angle / (hourlySnap * .pi / 180)) * hourlySnap * .pi / 180
+        let snappedAngle = round(angle / (min5Snap * .pi / 180)) * min5Snap * .pi / 180
         
         // Lock the nearest knob
         if sliderLock == .start {
@@ -215,20 +198,13 @@ struct ClockSlider: View {
     }
 }
 
-struct ContentView: View {
+struct ClockSliderView: View {
     var body: some View {
-        VStack {
-            Text("TBCircularSlider")
-                .font(.title)
             ClockSlider()
-                .padding()
-        }
     }
 }
 
-struct ClockSlider_Previews: PreviewProvider {
-    static var previews: some View {
-        ClockSlider()
-            .preferredColorScheme(.dark)
-    }
+#Preview {
+    ClockSlider()
+        .preferredColorScheme(.dark)
 }
