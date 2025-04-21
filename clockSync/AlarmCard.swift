@@ -10,7 +10,7 @@ import SwiftUI
 struct DayOfWeekView: View {
     let days = ["S", "M", "T", "W", "T", "F", "S"]
     @State private var dayEnabled = [false, true, true, false, true, false, true] // Example boolean array
-
+    
     var body: some View {
         HStack {
             ForEach(0..<days.count, id: \.self) { index in
@@ -24,56 +24,75 @@ struct DayOfWeekView: View {
 
 struct AlarmCard: View {
     @State private var isOn = true
+    @State private var alarmTime = Date()
+    var body: some View {
+        HStack {
+            Text("\(alarmTime, style: .time)") // Display time in HH:mm format
+                .font(.title)
+            //                        .padding(.leading)
+            
+            Spacer()
+            DayOfWeekView()
+            Spacer()
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .toggleStyle(SwitchToggleStyle(tint: .blue))
+            //                        .padding(.trailing)
+        }
+        .padding(.all, 2)
+        //                .contentShape(Rectangle())
+        //                .onLongPressGesture {
+        //                    // Handle the long press to configure
+        //                    showConfiguration.toggle()
+        //                }
+        //                .swipeActions {
+        //                    // Swipe Right to show delete action
+        //                    Button(action: {
+        //                        // Handle delete action here
+        //                        print("Alarm deleted")
+        //                    }) {
+        //                        Label("Delete", systemImage: "trash")
+        //                            .foregroundColor(.red)
+        //                    }
+        //                    .tint(.red)
+        //
+        //                    // Swipe Left to show configuration action
+        //                    Button(action: {
+        //                        // Handle configuration action here
+        //                        showConfiguration.toggle()
+        //                    }) {
+        //                        Label("Configure", systemImage: "gear")
+        //                            .foregroundColor(.blue)
+        //                    }
+        //                    .tint(.blue)
+        //                }
+        //                .sheet(isPresented: $showConfiguration) {
+        //                    // Configuration view when the configuration action is triggered
+        //                    ConfigurationView(alarmTime: $alarmTime, isOn: $isOn)
+        //                }
+        
+    }
+}
+
+struct AlarmCards: View {
+    @State private var isOn = true
     @State private var showConfiguration = false
     @State private var alarmTime = Date()
     
     var body: some View {
-        VStack {
+        VStack{
             List {
-                HStack {
-                    Text("\(alarmTime, style: .time)") // Display time in HH:mm format
-                        .font(.title)
-                        .padding(.leading)
-                    
-                    Spacer()
-                    DayOfWeekView()
-                    Spacer()
-                    Toggle("", isOn: $isOn)
-                        .labelsHidden()
-                        .toggleStyle(SwitchToggleStyle(tint: .blue))
-                        .padding(.trailing)
-                }
-                .contentShape(Rectangle())
-                .onLongPressGesture {
-                    // Handle the long press to configure
-                    showConfiguration.toggle()
-                }
-                .swipeActions {
-                    // Swipe Right to show delete action
-                    Button(action: {
-                        // Handle delete action here
-                        print("Alarm deleted")
-                    }) {
-                        Label("Delete", systemImage: "trash")
-                            .foregroundColor(.red)
-                    }
-                    .tint(.red)
-
-                    // Swipe Left to show configuration action
-                    Button(action: {
-                        // Handle configuration action here
-                        showConfiguration.toggle()
-                    }) {
-                        Label("Configure", systemImage: "gear")
-                            .foregroundColor(.blue)
-                    }
-                    .tint(.blue)
-                }
-                .sheet(isPresented: $showConfiguration) {
-                    // Configuration view when the configuration action is triggered
-                    ConfigurationView(alarmTime: $alarmTime, isOn: $isOn)
-                }
+                AlarmCard()
+                AlarmCard()
+                AlarmCard()
+                AlarmCard()
+                AlarmCard()
+                AlarmCard()
+                AlarmCard()
             }
+            .padding(.top,-35)
+            .listStyle(.grouped)
+            .frame(minWidth: 0, maxWidth: .infinity)
         }
     }
 }
@@ -99,7 +118,8 @@ struct ConfigurationView: View {
 struct AlarmCardView: View {
     var body: some View {
         VStack {
-            AlarmCard()
+            AlarmCards()
+                .preferredColorScheme(.dark)
         }
     }
 }
@@ -107,5 +127,6 @@ struct AlarmCardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmCardView()
+            .preferredColorScheme(.dark)
     }
 }
