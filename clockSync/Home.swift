@@ -14,6 +14,7 @@ import SwiftUI
 //TODO: Make an array that would create alarm cards
 //TODO: I think the card can't be slided
 //TODO: long press to delete multiple
+//TODO: More Setting dropdown for other settings
 struct Home: View {
     @State private var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false

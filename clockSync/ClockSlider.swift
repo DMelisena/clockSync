@@ -7,27 +7,37 @@
 
 import SwiftUI
 
-enum SliderLockType {
+enum SliderLockType { //Which slider is being moved. so if start is clicked, it would be the only deg value that could be changed
     case none, start, end
 }
 
 struct ClockSlider: View {
+    // Default State (pi for half circle value, - to go left)
+    // @State is needed if variable affect the view directly. (hot reload & view debugging purpose)
     @State private var startAngle: CGFloat = -1.57
     @State private var endAngle: CGFloat = 2.62
     @State private var sliderLock: SliderLockType = .none
 
     // The size of the slider
+    // let = js const (immutable, can't be modified)
+    // private => code only work on this struct (class), because the name could be used on other codes
     private let sliderDiameter: CGFloat = 230
     private let knobDiameter: CGFloat = 75
-    private let lineWidth: CGFloat = 20
-    private let min5Snap: CGFloat = 360/144 // Snap to hourly intervals
-    
+    private let lineWidth: CGFloat = 20 //purple bar thickness
+    /* *pi /180 */
+    private let min5Snap: CGFloat = 360/12/12 // Snap to 5 minutes interval (12 hours and 60mins/5)
+
+    //if var turned into private var, you would not be able to call the variable from inside of the struct to outside.
+    //example => clockslider = ClockSlider()
+    //Text("\(clockslider.sliderDiameterAddWidth)")
+    //this would then return the value of slider diameter value
     var sliderDiameterAddWidth: CGFloat {
         sliderDiameter + (lineWidth*3)
-        //FINE TUNE when changing sliderDiameter/lineWidth
+        //need FINE TUNE when changing sliderDiameter or lineWidth
     }
+    
     var durationMinutes: Int {
-        let twoPi = CGFloat.pi * 2
+        let twoPi = CGFloat.pi * 2 // full circle in rads
         var difference = endAngle - startAngle
         if difference < 0 {
             difference += twoPi
@@ -37,6 +47,7 @@ struct ClockSlider: View {
     var startAngleDeg: CGFloat {
         startAngle * 180 / .pi
     }
+//    var startAngleDeg: CGFloat = startAngle * 180 / .pi
     var endAngleDeg: CGFloat {
         endAngle * 180 / .pi
     }
@@ -44,12 +55,10 @@ struct ClockSlider: View {
         let twoPi = CGFloat.pi * 2
         var normalized = angle.truncatingRemainder(dividingBy: twoPi)
         if normalized < 0 { normalized += twoPi }
-        
         // Convert angle to total minutes (12 hours = 720 minutes = 2π radians)
         let totalMinutes = normalized / twoPi * 720
         let hour = Int(totalMinutes) / 60
-        let minute = Int(totalMinutes) % 60
-        
+        let minute = Int(totalMinutes) % 60 // remainder (mod operator)
         return (hour, minute)
     }
     var formattedDuration: String {
@@ -68,12 +77,17 @@ struct ClockSlider: View {
         VStack{
             let startTime = timeFromAngle(startAngle)
             let endTime = timeFromAngle(endAngle)
+//            Text("\(startAngle)")
             Text("\(startTime.hour):\(String(format: "%02d", startTime.minute)) - \(endTime.hour):\(String(format: "%02d", endTime.minute))")
                 .font(.system(size: 38, weight: .bold, design: .default))
+//            Text("\(startTime.hour)")
+//            Text("\(startTime.minute)")
+//            Text("\(startTime)")
+//            Text("\(String(format: "%02d", startTime.minute))")
             .padding(20) // Adds 20 points
-            ZStack { Circle()// Background circle
+            ZStack {
+                Circle()// Background circle
                     .stroke(Color(red: 123/255, green: 60/255, blue: 146/255).opacity(0.5), lineWidth: lineWidth * 3)
-                
                     .frame(width: sliderDiameter, height: sliderDiameter)
                 
                 Canvas { context, size in // Clock's strips
@@ -82,7 +96,7 @@ struct ClockSlider: View {
                     let tickLength: CGFloat = 8
                     let tickWidth: CGFloat = 2
                     
-                    for i in 0..<12 {
+                    for i in 0..<12 { //12 tick
                         let angle = CGFloat(i) * .pi / 6 // 30° per hour
                         let tickStart = CGPoint(
                             x: center.x + (radius - tickLength) * cos(angle),
@@ -129,10 +143,10 @@ struct ClockSlider: View {
             .frame(width: sliderDiameter, height: sliderDiameter)
             .gesture(DragGesture()
                 .onChanged { value in
-                    self.handleDrag(value: value.location)
+                    self.handleDrag(value: value.location) //the pressed white handle location
                 }
                 .onEnded { _ in
-                    self.sliderLock = .none
+                    self.sliderLock = .none //change the handledrag to none when it stopped being pressed
                 })
             .rotationEffect(.degrees(-90)) // Moves 0° to the top
             .padding(20) // Adds 20 padding surrounding the circle
@@ -149,7 +163,6 @@ struct ClockSlider: View {
             .frame(width: knobDiameter, height: knobDiameter)
             .overlay(Circle().stroke(Color.black, lineWidth: 2))
     }
-    
     // Helper function to calculate distance between two points
     private func distanceBetween(_ point1: CGPoint, _ point2: CGPoint) -> CGFloat {
         let xDist = point2.x - point1.x
@@ -162,31 +175,33 @@ struct ClockSlider: View {
         let center = CGPoint(x: sliderDiameter / 2, y: sliderDiameter / 2)
         return CGPoint(x: center.x + (sliderDiameter / 2) * cos(angle), y: center.y + (sliderDiameter / 2) * sin(angle))
     }
-    
+   //Kalo ada coordinat
+    //misal x 5
     // Function to convert a point into an angle
     private func angleFromPoint(_ point: CGPoint) -> CGFloat {
         let center = CGPoint(x: sliderDiameter / 2, y: sliderDiameter / 2)
-        return atan2(point.y - center.y, point.x - center.x)
+        return atan2(point.y - center.y, point.x - center.x) //arctan (ydist/xdist), returns radians
     }
     
     // Function to handle dragging and updating the knob positions
     private func handleDrag(value: CGPoint) {
-        let angle = angleFromPoint(value)
+        let angle = angleFromPoint(value) //touch radian value of angle from center
         
         // Snapping the angle to hourly intervals (30 degrees)
         let snappedAngle = round(angle / (min5Snap * .pi / 180)) * min5Snap * .pi / 180
-        
+        //round the location to the closest 5 min snap point
+       
         // Lock the nearest knob
-        if sliderLock == .start {
+        if sliderLock == .start { //first pressed rad angle
             startAngle = snappedAngle
-        } else if sliderLock == .end {
+        } else if sliderLock == .end { //handle bar last pressed rad angle
             endAngle = snappedAngle
         }
         
-        // Determine which knob to lock
+        // Determine which knob to lock, returns point from angle
         let startKnobPoint = pointFromAngle(startAngle)
         let endKnobPoint = pointFromAngle(endAngle)
-        
+        // which knob is being pressed based on the distance clicked
         let distanceToStart = distanceBetween(value, startKnobPoint)
         let distanceToEnd = distanceBetween(value, endKnobPoint)
         
