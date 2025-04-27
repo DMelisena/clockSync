@@ -35,6 +35,11 @@
 			path = clockSync;
 			sourceTree = "<group>";
 		};
+		16D5830E2DBE196C00F8C962 /* ClockView */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ClockView;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +72,7 @@
 			children = (
 				1609DC772DA8EF6A0066FF24 /* clockSync */,
 				1609DC762DA8EF6A0066FF24 /* Products */,
+				16D5830E2DBE196C00F8C962 /* ClockView */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,6 +103,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				1609DC772DA8EF6A0066FF24 /* clockSync */,
+				16D5830E2DBE196C00F8C962 /* ClockView */,
 			);
 			name = clockSync;
 			packageProductDependencies = (
