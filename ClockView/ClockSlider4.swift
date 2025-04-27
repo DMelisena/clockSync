@@ -52,6 +52,6 @@ struct ClockSlider4: View {
 }
 #Preview {
     ClockTime()
-    ClockSlider4()
         .preferredColorScheme(.dark)
+//    ClockSlider4()
 }
