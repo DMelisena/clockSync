@@ -13,7 +13,7 @@ struct ClockSlider4: View {
     
     var sliderDiameter: CGFloat = 230
     var barWidth: CGFloat = 70
-    var knobDiameter: CGFloat = 70
+    var knobDiameter: CGFloat = 75
     var barGap: CGFloat = 10
     
     var body: some View {
@@ -32,7 +32,7 @@ struct ClockSlider4: View {
                         startAngle: Angle(radians: Double(startRad)),
                         endAngle: Angle(radians: Double(endRad)),
                         clockwise: false
-                    )
+                   )
                     context.stroke(path, with: .color(.purple), lineWidth: barWidth-barGap)
                 }
                 handleView(angle: startRad)

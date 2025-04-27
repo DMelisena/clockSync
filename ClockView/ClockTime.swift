@@ -15,28 +15,26 @@ struct ClockTime: View {
         return rad * 6 / CGFloat.pi
     }
     @State var clockSlider4 = ClockSlider4()
-//    init(){
-//        clockSlider4.startRad = hourToRad(-3)
-//        clockSlider4.endRad = hourToRad(6)
-//    }
 
     init() {
-        _clockSlider4 = State(initialValue: ClockSlider4(startRad: hourToRad(-5), endRad: hourToRad(6)))
+        _clockSlider4 = State(initialValue: ClockSlider4(startRad: hourToRad(2),
+                         endRad: hourToRad(-4)))
     }
     var getTime: CGFloat {
         var timeLengthRad = abs(clockSlider4.endRad-clockSlider4.startRad)
         if clockSlider4.endRad < clockSlider4.startRad {
-            timeLengthRad += CGFloat.pi * 2
+            timeLengthRad = timeLengthRad * -1
+            timeLengthRad += CGFloat.pi*2
         }
-        return timeLengthRad/CGFloat.pi * 12
+        return timeLengthRad/CGFloat.pi*6
     }
     var body: some View {
         Text("\(getTime)")
         Text("\(clockSlider4.startRad)")
-        Text("\(radtoHour(clockSlider4.startRad))")
+        Text("start Time :\(radtoHour(clockSlider4.startRad))")
         Text("\(clockSlider4.endRad)")
-        Text("\(radtoHour(clockSlider4.endRad))")
-        Text("\(getTime)")
+        Text("end Time :\(radtoHour(clockSlider4.endRad))")
+        Text("\(getTime) hour of sleep")
         clockSlider4
     }
     
@@ -44,5 +42,4 @@ struct ClockTime: View {
 
 #Preview {
     ClockTime()
-    ClockSlider4()
 }
