@@ -30,32 +30,31 @@ class NotificationManager {
         content.sound = .default
         content.badge = 1
 
-        // uncomment to use Time trigger
+        // uncomment to use specific Trigger
         // Time trigger
-         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5.0, repeats: false)
-
-//        // Calendar Trigger
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5.0, repeats: false)
+//
+//        Calendar Trigger
 //        var dateComponents = DateComponents()
 //        dateComponents.hour = 3
 //        dateComponents.minute = 13
 //        dateComponents.weekday = 3
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
-//                                                 repeats: true)
-
-        // location
+//        let trigger = UNCalendarNotificationTrigger(
+//            dateMatching: dateComponents,
+//            repeats: true)
+//
+//        Location Trigger
 //        let coordinates = CLLocationCoordinate2D(latitude: 32.6514, longitude: -161.4333)
-//        let region = CLCircularRegion(center: coordinates, radius: 100, identifier: UUID().uuidString)
-        
-        
-
-        
-        
+//        let region = CLCircularRegion(
+//            center: coordinates, radius: 100,
+//            identifier: UUID().uuidString)
+//
         let request = UNNotificationRequest(
             identifier: UUID().uuidString,
             content: content,
             trigger: trigger
         )
-        
+
         UNUserNotificationCenter.current().add(request)
     }
 
@@ -77,6 +76,7 @@ class NotificationManager {
 
 struct LocalNotificationBoot: View {
     @State private var badgeCount: Int = 0
+    @Environment(\.scenePhase) var scenePhase
 
     var body: some View {
         VStack(spacing: 40) {
@@ -95,50 +95,12 @@ struct LocalNotificationBoot: View {
                 NotificationManager.instance.cancelNotification()
             }
         }
-        // This is not implemented on new swift version
-//        .onAppear {
-//            UNUserNotificationCenter.current().getBadgeCount { count in
-//                badgeCount = count
-//            }
-//        }
-                .onAppear {
-            // This block should not be reached if deployment target is >= iOS 15.0
-//            badgeCount = UIApplication.shared.applicationIconBadgeNumber
-            // NotifUI.swift:102:47 'applicationIconBadgeNumber' was deprecated in iOS 17.0: Use -[UNUserNotificationCenter setBadgeCount:withCompletionHandler:] instead.
-            NotificationManager.instance.resetBadgeCount()
-            UNUserNotificationCenter.current().setBadgeCount(0) { error in
-                if let error = error {
-                    print("Error resetting badge count: \(error)")
-                } else {
-                    print("Badge count reset to 0")
-                }
+        // onappear won't get called for momentarily close and reopen the app, comment .onchange to disable
+        .onChange(of: scenePhase) { _, newValue in
+            if newValue == .active {
+                NotificationManager.instance.resetBadgeCount()
             }
-
-            print("Warning: Using deprecated applicationIconBadgeNumber for initial badge count.")
-            // this seems to be a better implementation
-            // https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/setbadgecount(_:withcompletionhandler:)
-            // but UNUserNotificationCenter.current().setBadgeCount(0) didn't work when I tried it.
         }
-        //TODO: Make the red badge gone if I open the app
-//        .onAppear {
-//            // This block should not be reached if deployment target is >= iOS 15.0
-////            badgeCount = UIApplication.shared.applicationIconBadgeNumber
-//            // NotifUI.swift:102:47 'applicationIconBadgeNumber' was deprecated in iOS 17.0: Use -[UNUserNotificationCenter setBadgeCount:withCompletionHandler:] instead.
-//            
-//            NotificationManager.instance.resetBadgeCount()
-//            UNUserNotificationCenter.current().setBadgeCount(0) { error in
-//                if let error = error {
-//                    print("Error resetting badge count: \(error)")
-//                } else {
-//                    print("Badge count reset to 0")
-//                }
-//            }
-//
-//            print("Warning: Using deprecated applicationIconBadgeNumber for initial badge count.")
-//            // this seems to be a better implementation
-//            // https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/setbadgecount(_:withcompletionhandler:)
-//            // but UNUserNotificationCenter.current().setBadgeCount(0) didn't work when I tried it.
-//        }
     }
 }
 
