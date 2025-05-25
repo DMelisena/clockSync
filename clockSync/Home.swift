@@ -16,8 +16,9 @@ import SwiftUI
 //TODO: long press to delete multiple
 //TODO: More Setting dropdown for other settings
 struct Home: View {
-    @State private var showingSettingsSheet = false
+    @State var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false
+
     
     private let defaults = UserDefaults.standard
     
@@ -69,9 +70,9 @@ struct Home: View {
                             .clipShape(Circle())
                     }
                     .sheet(isPresented: $showingAddAlarmSheet) {
-                        AddAlarmView()
-                            .preferredColorScheme(.dark)
+                        AddAlarmView(showingAddAlarmSheet: $showingAddAlarmSheet)
                     }
+
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 30)

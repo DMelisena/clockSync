@@ -31,13 +31,22 @@ struct DaysPicker: View {
         }
     }
 }
+var arrayOfAlarms: [Alarm] = []
+struct Alarm: Codable {
+    var keyDevice: [String]
+    var tones: String
+    var description: String {
+        return "Alarm(device: \(keyDevice), tone: \(tones))"
+    }
+}
 
 struct AddAlarmView: View {
     @State private var alarmTime = Date()
     @State private var selectedTone = "For River"
-    @State private var repeatEnabled = false
-    @State private var snoozeEnabled = true
-    @State private var snoozeInterval = 5
+    @Binding var showingAddAlarmSheet: Bool
+//    @State private var repeatEnabled = false
+//    @State private var snoozeEnabled = true
+//    @State private var snoozeInterval = 5
 
     let tones = ["For River", "Chimes", "Radar", "Beacon", "Marimba"]
     let snoozeOptions = [5, 10, 15, 30]
@@ -49,15 +58,16 @@ struct AddAlarmView: View {
     let repeatOptions = ["Every Day", "Weekday", "Weekend", "other"]
 
     @State private var keyDevice = "Iphone"
-    @State private var beforeSleepReminder = "1 hour"
     @State private var defaultAlarmTone = "For River"
-    @State private var randomizedAlarm = true
-    @State private var consecutiveMode = true
-    @State private var allowSnooze = true
-    @State private var defaultTimezone = true
-    @State private var selectedTimeZone = TimeZone.current.identifier
-    @State private var selectedMinutes = 0
-    @State private var repeatOption = "Every Day"
+//    @State private var beforeSleepReminder = "1 hour"
+//    @State private var randomizedAlarm = true
+//    @State private var consecutiveMode = true
+//    @State private var allowSnooze = true
+//    @State private var defaultTimezone = true
+//    @State private var selectedTimeZone = TimeZone.current.identifier
+//    @State private var selectedMinutes = 0
+//    @State private var repeatOption = "Every Day"
+    
 
     var body: some View {
         NavigationStack {
@@ -75,51 +85,63 @@ struct AddAlarmView: View {
                         ForEach(tones, id: \.self) { tone in
                             Text(tone)
                         }
+                        
                     }
-                    Toggle("Repeat", isOn: $repeatEnabled)
-                    if repeatEnabled {
-                        Picker("Frequency", selection: $repeatOption) {
-                            ForEach(repeatOptions, id: \.self) { schedule in
-                                Text(schedule)
-                            }
-                        }
-                        if repeatOption == "other" {
-                            DaysPicker()
-                        }
-                    }
-                    Toggle("Allow Snooze", isOn: $snoozeEnabled)
-
-                    if snoozeEnabled {
-                        Picker("Snooze Interval", selection: $snoozeInterval) {
-                            ForEach(snoozeOptions, id: \.self) { interval in
-                                Text("\(interval) minutes")
-                            }
-                        }
-                    }
-                    Toggle("Randomize Alarm Tone", isOn: $randomizedAlarm)
-                    Toggle("Consecutive Mode", isOn: $consecutiveMode)
-                    Toggle("Use Default Timezone", isOn: $defaultTimezone)
-                    if !defaultTimezone {
-                        Picker("", selection: $selectedTimeZone) {
-                            ForEach(timeZones, id: \.self) { zone in
-                                Text(zone).tag(zone)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                    }
+//                    Toggle("Repeat", isOn: $repeatEnabled)
+//                    if repeatEnabled {
+//                        Picker("Frequency", selection: $repeatOption) {
+//                            ForEach(repeatOptions, id: \.self) { schedule in
+//                                Text(schedule)
+//                            }
+//                            newAlarm.repeatOptions.append(repeatOption)
+//                        }
+//                        if repeatOption == "other" {
+//                            DaysPicker()
+//                        }
+//                    }
+//                    Toggle("Allow Snooze", isOn: $snoozeEnabled)
+//
+//                    if snoozeEnabled {
+//                        Picker("Snooze Interval", selection: $snoozeInterval) {
+//                            ForEach(snoozeOptions, id: \.self) { interval in
+//                                Text("\(interval) minutes")
+//                            }
+//                        }
+//                    }
+//                    Toggle("Randomize Alarm Tone", isOn: $randomizedAlarm)
+//                    Toggle("Consecutive Mode", isOn: $consecutiveMode)
+//                    Toggle("Use Default Timezone", isOn: $defaultTimezone)
+//                    if !defaultTimezone {
+//                        Picker("", selection: $selectedTimeZone) {
+//                            ForEach(timeZones, id: \.self) { zone in
+//                                Text(zone).tag(zone)
+//                            }
+//                        }
+//                        .pickerStyle(.menu)
+//                    }
                 }
                 .navigationTitle("Add Alarm")
             }
-            .toolbar {
+            .toolbar (content:{
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add") {}
+                    Button("Add") {
+                        let newAlarm = Alarm(keyDevice: [keyDevice], tones: selectedTone)
+                        arrayOfAlarms.append(newAlarm)
+
+                        if let encoded = try? JSONEncoder().encode(arrayOfAlarms) {
+                            UserDefaults.standard.set(encoded, forKey: "alarms")
+                            print("Saved alarms:", arrayOfAlarms)
+                        }
+                        showingAddAlarmSheet = false
+                    }
+
                 }
-            }
+            })
         }
     }
 }
 
 #Preview {
-    AddAlarmView()
+    AddAlarmView(showingAddAlarmSheet: .constant(true))
         .preferredColorScheme(.dark)
 }
