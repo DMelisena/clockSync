@@ -19,9 +19,11 @@ struct Home: View {
     @State private var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false
     var body: some View {
+        
         ZStack {
             Color.black.ignoresSafeArea() // Background
             VStack {
+//                NotifView()
                 Spacer() // Pushes buttons to the bottom
                 ClockSlider()
                     .padding(.bottom, 50)
