@@ -18,6 +18,16 @@ import SwiftUI
 struct Home: View {
     @State private var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false
+    
+    private let defaults = UserDefaults.standard
+    
+    var sleepStartAngle: Float = 0.0
+    @State private var endAngle: CGFloat = 2.62
+    var startValue = CGFloat(UserDefaults.standard.double(forKey: "startAngle"))
+    var endValue = CGFloat(UserDefaults.standard.double(forKey: "endAngle"))
+
+
+
     var body: some View {
         
         ZStack {
@@ -25,7 +35,7 @@ struct Home: View {
             VStack {
 //                NotifView()
                 Spacer() // Pushes buttons to the bottom
-                ClockSlider()
+                ClockSlider(startAngle: startValue, endAngle: endValue)
                     .padding(.bottom, 50)
                 AlarmCards()
                     .preferredColorScheme(.dark)

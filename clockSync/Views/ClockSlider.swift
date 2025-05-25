@@ -14,8 +14,21 @@ enum SliderLockType { // Which slider is being moved. so if start is clicked, it
 struct ClockSlider: View {
     // Default State (pi for half circle value, - to go left)
     // @State is needed if variable affect the view directly. (hot reload & view debugging purpose)
-    @State private var startAngle: CGFloat = -1.57
-    @State private var endAngle: CGFloat = 2.62
+    
+    private let defaults = UserDefaults.standard
+    @State private var startAngle: CGFloat
+    @State private var endAngle: CGFloat
+    
+    init(startAngle: CGFloat, endAngle: CGFloat) {
+        let loadedStartAngle = defaults.object(forKey: "startAngle") as? CGFloat ?? -CGFloat.pi / 2
+
+        let loadedEndAngle = defaults.object(forKey: "endAngle") as? CGFloat ?? CGFloat.pi / 2 * 1.5
+        
+        _startAngle = State(initialValue: loadedStartAngle)
+        _endAngle = State(initialValue: loadedEndAngle)
+        
+    }
+    
     @State private var sliderLock: SliderLockType = .none
 
     // The size of the slider
@@ -77,11 +90,13 @@ struct ClockSlider: View {
             return "\(minutes) minute\(minutes != 1 ? "s" : "") of sleep"
         }
     }
-
+    
     var body: some View {
         VStack {
             let startTime = timeFromAngle(startAngle)
             let endTime = timeFromAngle(endAngle)
+            
+            
 //            Text("\(startAngle)")
             Text("\(startTime.hour):\(String(format: "%02d", startTime.minute)) - \(endTime.hour):\(String(format: "%02d", endTime.minute))")
                 .font(.system(size: 38, weight: .bold, design: .default))
@@ -151,6 +166,8 @@ struct ClockSlider: View {
                     self.handleDrag(value: value.location) // the pressed white handle location
                 }
                 .onEnded { _ in
+                    defaults.set(startAngle, forKey: "startAngle")
+                    defaults.set(endAngle, forKey: "endAngle")
                     self.sliderLock = .none // change the handledrag to none when it stopped being pressed
                 })
             .rotationEffect(.degrees(-90)) // Moves 0° to the top
@@ -217,13 +234,11 @@ struct ClockSlider: View {
 }
 
 // TODO:
-struct ClockSliderView: View {
-    var body: some View {
-        ClockSlider()
-    }
-}
+struct ClockSliderView_Previews: PreviewProvider {
+    static var previews: some View {
+        let startValue = CGFloat(UserDefaults.standard.double(forKey: "startAngle"))
+        let endValue = CGFloat(UserDefaults.standard.double(forKey: "endAngle"))
 
-#Preview {
-    ClockSlider()
-        .preferredColorScheme(.dark)
+        return ClockSlider(startAngle: startValue, endAngle: endValue)
+    }
 }
