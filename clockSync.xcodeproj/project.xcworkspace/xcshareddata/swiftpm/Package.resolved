@@ -1,0 +1,24 @@
+{
+  "originHash" : "66f6aaa92ee63b70d4f090bc718fec754b0e8d21ab7cd0eb44a2db476f68a258",
+  "pins" : [
+    {
+      "identity" : "inject",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krzysztofzablocki/Inject.git",
+      "state" : {
+        "revision" : "728c56639ecb3df441d51d5bc6747329afabcfc9",
+        "version" : "1.5.2"
+      }
+    },
+    {
+      "identity" : "xcodebuild-nvim-preview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wojciech-kulik/xcodebuild-nvim-preview.git",
+      "state" : {
+        "revision" : "53e2659e2a91f49ff57e44f72e5de07fb3baebdb",
+        "version" : "1.0.9"
+      }
+    }
+  ],
+  "version" : 3
+}

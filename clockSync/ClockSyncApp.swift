@@ -13,8 +13,6 @@ struct ClockSyncApp: App {
     var body: some Scene {
         WindowGroup {
             Home()
-//        LocalNotificationBoot()
-//                .setupNvimPreview { HomeView() }
         }
     }
 }

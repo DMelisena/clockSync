@@ -23,13 +23,20 @@ struct DayOfWeekView: View {
 }
 
 struct AlarmCard: View {
+    var alarm: Alarm
     @State private var isOn = true
+    
+    init(alarm: Alarm) {
+        self.alarm = alarm
+        self._isOn = State(initialValue: alarm.isOn)
+    }
     @State private var alarmTime = Date()
+
+
     var body: some View {
         HStack {
-            Text("\(alarmTime, style: .time)") // Display time in HH:mm format
+            Text("\(alarm.time, style: .time)") // Display time in HH:mm format
                 .font(.title)
-            //                        .padding(.leading)
             
             Spacer()
             DayOfWeekView()
@@ -37,63 +44,39 @@ struct AlarmCard: View {
             Toggle("", isOn: $isOn)
                 .labelsHidden()
                 .toggleStyle(SwitchToggleStyle(tint: .blue))
-            //                        .padding(.trailing)
         }
         .padding(.all, 2)
-        //                .contentShape(Rectangle())
-        //                .onLongPressGesture {
-        //                    // Handle the long press to configure
-        //                    showConfiguration.toggle()
-        //                }
-        //                .swipeActions {
-        //                    // Swipe Right to show delete action
-        //                    Button(action: {
-        //                        // Handle delete action here
-        //                        print("Alarm deleted")
-        //                    }) {
-        //                        Label("Delete", systemImage: "trash")
-        //                            .foregroundColor(.red)
-        //                    }
-        //                    .tint(.red)
-        //
-        //                    // Swipe Left to show configuration action
-        //                    Button(action: {
-        //                        // Handle configuration action here
-        //                        showConfiguration.toggle()
-        //                    }) {
-        //                        Label("Configure", systemImage: "gear")
-        //                            .foregroundColor(.blue)
-        //                    }
-        //                    .tint(.blue)
-        //                }
-        //                .sheet(isPresented: $showConfiguration) {
-        //                    // Configuration view when the configuration action is triggered
-        //                    ConfigurationView(alarmTime: $alarmTime, isOn: $isOn)
-        //                }
-        
     }
 }
 
-struct AlarmCards: View {
+struct AlarmCards: View{
     @State private var isOn = true
     @State private var showConfiguration = false
     @State private var alarmTime = Date()
     
+    @Binding var alarms: [Alarm]
     var body: some View {
         VStack{
-            List {
-                AlarmCard()
-                AlarmCard()
-                AlarmCard()
-                AlarmCard()
-                AlarmCard()
-                AlarmCard()
-                AlarmCard()
+            List {ForEach(alarms.indices, id: \.self) { index in
+                AlarmCard(alarm: self.alarms[index])
+                }
             }
             .padding(.top,-35)
             .listStyle(.grouped)
             .frame(minWidth: 0, maxWidth: .infinity)
         }
+        .onAppear {
+            if let savedData = UserDefaults.standard.data(forKey: "alarms"),
+               let decoded = try? JSONDecoder().decode([Alarm].self, from: savedData) {
+                print("====xxxxx=====")
+                print(alarm)
+//                alarms = decoded
+                print("=====xxxxx===")
+
+            }
+        }
+
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -115,18 +98,9 @@ struct ConfigurationView: View {
     }
 }
 
-struct AlarmCardView: View {
-    var body: some View {
-        VStack {
-            AlarmCards()
-                .preferredColorScheme(.dark)
-        }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        AlarmCardView()
-            .preferredColorScheme(.dark)
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AlarmCards()
+//    }
+//}
+//

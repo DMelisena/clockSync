@@ -18,19 +18,15 @@ import SwiftUI
 struct Home: View {
     @State var showingSettingsSheet = false
     @State private var showingAddAlarmSheet = false
-
     
     private let defaults = UserDefaults.standard
     
     var sleepStartAngle: Float = 0.0
-    @State private var endAngle: CGFloat = 2.62
+    @State private var endAngle: CGFloat = 5.62
     var startValue = CGFloat(UserDefaults.standard.double(forKey: "startAngle"))
     var endValue = CGFloat(UserDefaults.standard.double(forKey: "endAngle"))
-
-
-
+    @State var alarms: [Alarm] = [] //
     var body: some View {
-        
         ZStack {
             Color.black.ignoresSafeArea() // Background
             VStack {
@@ -38,8 +34,9 @@ struct Home: View {
                 Spacer() // Pushes buttons to the bottom
                 ClockSlider(startAngle: startValue, endAngle: endValue)
                     .padding(.bottom, 50)
-                AlarmCards()
-                    .preferredColorScheme(.dark)
+//                                AlarmCard()
+//                    .preferredColorScheme(.dark)
+                AlarmCards(alarms: $alarms)
                 HStack {
                     // Settings button
                     Button(action: {
@@ -70,9 +67,12 @@ struct Home: View {
                             .clipShape(Circle())
                     }
                     .sheet(isPresented: $showingAddAlarmSheet) {
-                        AddAlarmView(showingAddAlarmSheet: $showingAddAlarmSheet)
+                        AddAlarmView(showingAddAlarmSheet: $showingAddAlarmSheet, alarms: $alarms)
                     }
 
+                    .onAppear {
+                        loadAlarms()
+                    }
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 30)
@@ -80,10 +80,11 @@ struct Home: View {
             }
         }
     }
-}
-
-#Preview {
-    Home()
-        .preferredColorScheme(.dark)
-        .background(Color.black)
+    func loadAlarms() {
+        if let savedData = UserDefaults.standard.data(forKey:"alarms"),
+           let decoded = try? JSONDecoder().decode([Alarm].self, from: savedData) {
+            alarms = decoded
+        }
+        print("AlarmLoaded")
+    }
 }

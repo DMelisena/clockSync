@@ -47,7 +47,7 @@ struct SettingsView: View {
                     }
                     Toggle("Randomize Alarm", isOn: $randomizedAlarm)
                     Toggle("Allow Snooze", isOn: $allowSnooze)
-                    if allowSnooze{
+                    if allowSnooze {
                         Picker("Minutes", selection: $selectedMinutes) {
                             ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { minute in
                                 Text("\(minute) min").tag(minute)
@@ -57,7 +57,7 @@ struct SettingsView: View {
                     }
                     Toggle("Consecutive Mode", isOn: $consecutiveMode)
                     Toggle("Use Default Timezone", isOn: $defaultTimezone)
-                    if !defaultTimezone{
+                    if !defaultTimezone {
                         Picker("", selection: $selectedTimeZone) {
                             ForEach(timeZones, id: \.self) { zone in
                                 Text(zone).tag(zone)
@@ -65,7 +65,7 @@ struct SettingsView: View {
                         }
                         .pickerStyle(.menu)
                     }
-                    Button("Customize Button") { }
+                    Button("Customize Button") {}
                         .padding(.all, 6)
                 }
                 .padding(.all, 6)
@@ -75,6 +75,7 @@ struct SettingsView: View {
         }
     }
 }
+
 #Preview {
     SettingsView()
         .preferredColorScheme(.dark)

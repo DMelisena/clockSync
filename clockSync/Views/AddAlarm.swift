@@ -31,31 +31,35 @@ struct DaysPicker: View {
         }
     }
 }
-var arrayOfAlarms: [Alarm] = []
 struct Alarm: Codable {
+    var time: Date
     var keyDevice: [String]
     var tones: String
+    var isOn: Bool
     var description: String {
         return "Alarm(device: \(keyDevice), tone: \(tones))"
     }
+    
 }
 
 struct AddAlarmView: View {
+    @Binding var showingAddAlarmSheet: Bool
+    @Binding var alarms: [Alarm]
+
     @State private var alarmTime = Date()
     @State private var selectedTone = "For River"
-    @Binding var showingAddAlarmSheet: Bool
 //    @State private var repeatEnabled = false
 //    @State private var snoozeEnabled = true
 //    @State private var snoozeInterval = 5
 
     let tones = ["For River", "Chimes", "Radar", "Beacon", "Marimba"]
-    let snoozeOptions = [5, 10, 15, 30]
-    let timeZones = TimeZone.knownTimeZoneIdentifiers
-    let alarmSounds = ["Chimes", "Radar", "Beacon", "Marimba", "Circuit"]
+//    let snoozeOptions = [5, 10, 15, 30]
+//    let timeZones = TimeZone.knownTimeZoneIdentifiers
+//    let alarmSounds = ["Chimes", "Radar", "Beacon", "Marimba", "Circuit"]
     let keyDevices = ["Iphone", "Mac", "IWatch"]
-    let beforeSleepReminders = ["5 minutes", "10 minutes", "30 minutes", "1 hour", "2 hours"]
-    let defaultAlarmTones = ["For River", "music 1", "music 2", "music 3", "music 4"]
-    let repeatOptions = ["Every Day", "Weekday", "Weekend", "other"]
+//    let beforeSleepReminders = ["5 minutes", "10 minutes", "30 minutes", "1 hour", "2 hours"]
+//    let defaultAlarmTones = ["For River", "music 1", "music 2", "music 3", "music 4"]
+//    let repeatOptions = ["Every Day", "Weekday", "Weekend", "other"]
 
     @State private var keyDevice = "Iphone"
     @State private var defaultAlarmTone = "For River"
@@ -122,26 +126,31 @@ struct AddAlarmView: View {
                 }
                 .navigationTitle("Add Alarm")
             }
-            .toolbar (content:{
+            .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let newAlarm = Alarm(keyDevice: [keyDevice], tones: selectedTone)
-                        arrayOfAlarms.append(newAlarm)
+                        let newAlarm = Alarm(time: alarmTime, keyDevice: [keyDevice], tones: selectedTone, isOn: true)
+                        alarms.append(newAlarm)
 
-                        if let encoded = try? JSONEncoder().encode(arrayOfAlarms) {
+                        if let encoded = try? JSONEncoder().encode(alarms) {
                             UserDefaults.standard.set(encoded, forKey: "alarms")
-                            print("Saved alarms:", arrayOfAlarms)
+                            print("Saved alarms:", alarms)
                         }
                         showingAddAlarmSheet = false
                     }
-
                 }
-            })
+            }
+            .onAppear {
+                if let savedData = UserDefaults.standard.data(forKey: "alarms"),
+                   let decoded = try? JSONDecoder().decode([Alarm].self, from: savedData) {
+                    alarms = decoded
+                }
+            }
         }
     }
 }
 
-#Preview {
-    AddAlarmView(showingAddAlarmSheet: .constant(true))
-        .preferredColorScheme(.dark)
-}
+//#Preview {
+//    AddAlarmView(showingAddAlarmSheet: .constant(true))
+//        .preferredColorScheme(.dark)
+//}
